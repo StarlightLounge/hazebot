@@ -86,6 +86,7 @@ export default function ServerSettings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           guildId: serverId, 
+          userId: session?.user?.id || session?.user?.email,
           action, 
           url 
         })
@@ -98,6 +99,24 @@ export default function ServerSettings() {
       console.error(e);
     }
   };
+
+  const [musicState, setMusicState] = useState<any>(null);
+
+  useEffect(() => {
+    if (activeTab !== 'music') return;
+    const fetchMusicState = async () => {
+      try {
+        const res = await fetch(`/api/music?guildId=${serverId}`);
+        const data = await res.json();
+        if (data.musicState) setMusicState(data.musicState);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchMusicState();
+    const interval = setInterval(fetchMusicState, 3000);
+    return () => clearInterval(interval);
+  }, [activeTab, serverId]);
 
   if (status === "loading") return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
   if (status === "unauthenticated") redirect('/');
@@ -224,14 +243,14 @@ export default function ServerSettings() {
                 <div style={{ display: 'flex', gap: '1.5rem', background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem', alignItems: 'center', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.5)' }}>
                    <div style={{ width: '100px', height: '100px', borderRadius: '8px', background: 'url(https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&h=300&fit=crop) center/cover', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}></div>
                    <div style={{ flex: 1 }}>
-                     <h3 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>Chill Lofi Beats to Study To</h3>
-                     <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Lofi Girl</p>
+                     <h3 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{musicState?.now_playing ? musicState.now_playing.title : 'Nothing Playing'}</h3>
+                     <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>{musicState?.now_playing ? 'Haze Bot' : 'Waiting for songs...'}</p>
                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>1:24</span>
+                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>0:00</span>
                        <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', position: 'relative' }}>
-                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '30%', background: 'var(--accent-green)', borderRadius: '3px', boxShadow: '0 0 10px var(--accent-green)' }}></div>
+                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: musicState?.is_playing ? '50%' : '0%', background: 'var(--accent-green)', borderRadius: '3px', boxShadow: '0 0 10px var(--accent-green)' }}></div>
                        </div>
-                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>4:20</span>
+                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>-:-</span>
                      </div>
                    </div>
                 </div>
@@ -239,7 +258,7 @@ export default function ServerSettings() {
                 {/* Player Controls */}
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2rem', marginTop: '2rem' }}>
                   <button onClick={() => handleMusicAction('SKIP')} className="btn btn-secondary" style={{ width: '50px', height: '50px', borderRadius: '50%', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fa-solid fa-backward-step"></i></button>
-                  <button onClick={() => handleMusicAction('PAUSE')} className="btn btn-primary" style={{ width: '65px', height: '65px', borderRadius: '50%', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', background: 'var(--accent-green)', color: 'black' }}><i className="fa-solid fa-play"></i></button>
+                  <button onClick={() => handleMusicAction('PAUSE')} className="btn btn-primary" style={{ width: '65px', height: '65px', borderRadius: '50%', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', background: 'var(--accent-green)', color: 'black' }}><i className={`fa-solid ${musicState?.is_playing ? 'fa-pause' : 'fa-play'}`}></i></button>
                   <button onClick={() => handleMusicAction('SKIP')} className="btn btn-secondary" style={{ width: '50px', height: '50px', borderRadius: '50%', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fa-solid fa-forward-step"></i></button>
                 </div>
                 
@@ -264,20 +283,17 @@ export default function ServerSettings() {
                   </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', borderLeft: '3px solid transparent', transition: '0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'} onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                         <span style={{ color: 'var(--text-muted)', width: '20px', textAlign: 'center' }}>1</span>
-                         <strong>Midnight City (Slowed)</strong>
-                      </div>
-                      <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>3:14</span>
+                   {musicState?.queue?.map((item: any, i: number) => (
+                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', borderLeft: '3px solid transparent', transition: '0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'} onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                       <span style={{ color: 'var(--text-muted)', fontSize: '1.1rem', width: '20px', textAlign: 'center' }}>{i + 1}</span>
+                       <strong style={{ fontSize: '1.05rem' }}>{item.title}</strong>
+                     </div>
                    </div>
-                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', borderLeft: '3px solid transparent', transition: '0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'} onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                         <span style={{ color: 'var(--text-muted)', width: '20px', textAlign: 'center' }}>2</span>
-                         <strong>Synthwave Mix 2024</strong>
-                      </div>
-                      <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>45:00</span>
-                   </div>
+                   ))}
+                   {(!musicState?.queue || musicState.queue.length === 0) && (
+                     <p style={{ color: 'var(--text-muted)', padding: '1rem' }}>Queue is empty.</p>
+                   )}
                 </div>
               </div>
             )}
@@ -288,7 +304,7 @@ export default function ServerSettings() {
 
       {showToast && (
         <div style={{ position: 'fixed', bottom: '20px', right: '20px', background: 'var(--accent-green)', color: 'var(--bg-main)', padding: '1rem 2rem', borderRadius: '8px', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', gap: '0.5rem', animation: 'slideIn 0.3s ease-out' }}>
-          <i className="fa-solid fa-check-circle"></i> Settings Saved Successfully!
+          <i className="fa-solid fa-check-circle"></i> Success!
         </div>
       )}
 

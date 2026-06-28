@@ -14,12 +14,15 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
+        token.providerAccountId = account.providerAccountId;
       }
       return token;
     },
     async session({ session, token }) {
       // @ts-ignore
       session.accessToken = token.accessToken;
+      // @ts-ignore
+      session.user.id = token.providerAccountId;
       return session;
     }
   }

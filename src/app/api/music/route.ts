@@ -26,3 +26,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const guildId = searchParams.get('guildId');
+    if (!guildId) return NextResponse.json({ error: 'Missing guildId' }, { status: 400 });
+
+    await connectToDatabase();
+    const db = mongoose.connection.db;
+    if (!db) return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
+
+    const guild = await db.collection('guilds').findOne({ guild_id: guildId });
+    return NextResponse.json({ musicState: guild?.music_state || null });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+  }
+}
