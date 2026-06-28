@@ -86,7 +86,7 @@ export default function ServerSettings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           guildId: serverId, 
-          userId: session?.user?.id || session?.user?.email,
+          userId: (session?.user as any)?.id || session?.user?.email,
           action, 
           url 
         })
@@ -98,6 +98,8 @@ export default function ServerSettings() {
     } catch (e) {
       console.error(e);
     }
+  };
+
   const [brandingName, setBrandingName] = useState('');
   const [brandingAvatar, setBrandingAvatar] = useState('');
 
@@ -110,7 +112,7 @@ export default function ServerSettings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           guildId: serverId, 
-          userId: session?.user?.id || session?.user?.email,
+          userId: (session?.user as any)?.id || session?.user?.email,
           action: 'UPDATE_BRANDING', 
           name: brandingName,
           avatar_url: brandingAvatar
@@ -337,6 +339,7 @@ export default function ServerSettings() {
                    {(!musicState?.queue || musicState.queue.length === 0) && (
                      <p style={{ color: 'var(--text-muted)', padding: '1rem' }}>Queue is empty.</p>
                    )}
+                </div>
                 </div>
               </div>
             )}
