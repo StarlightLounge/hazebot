@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HazeBot Web Dashboard
 
-## Getting Started
+This is a premium [Next.js](https://nextjs.org/) web application built for the HazeBot Discord community. It features a stunning dark-mode interface, glassmorphism UI elements, and a fully functional Discord OAuth2 authentication system.
 
-First, run the development server:
+## 🚀 Getting Started Locally
+
+First, install dependencies and run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔐 Discord Authentication Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To enable real Discord logins, you need to configure your environment variables:
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications).
+2. Create an application and navigate to the **OAuth2** tab.
+3. Add a redirect URI: `http://localhost:3000/api/auth/callback/discord` (For production, use your Vercel URL, e.g., `https://your-site.vercel.app/api/auth/callback/discord`).
+4. Copy your `Client ID` and `Client Secret`.
+5. Rename the `.env.local` file in this repository (or create one) and add:
 
-## Learn More
+```env
+DISCORD_CLIENT_ID="your_client_id"
+DISCORD_CLIENT_SECRET="your_client_secret"
+NEXTAUTH_SECRET="a_random_secure_string_here"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🌍 Deploying to Vercel & GitHub
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The recommended way to host this application is through Vercel, using GitHub as your backup and source control.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Step 1: Push to GitHub (Your Backup)
+1. Create a new empty repository on your [GitHub](https://github.com/) account.
+2. In your terminal, inside the `hazebot-app` folder, run:
+```bash
+git add .
+git commit -m "Initial HazeBot App setup"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git push -u origin main
+```
+*Now your code is safely backed up on GitHub!*
 
-## Deploy on Vercel
+### Step 2: Deploy to Vercel
+1. Go to [Vercel](https://vercel.com/) and sign in with your GitHub account.
+2. Click **"Add New..." > "Project"**.
+3. Import the GitHub repository you just created.
+4. Before clicking Deploy, expand the **Environment Variables** section and add your Discord credentials:
+   - `DISCORD_CLIENT_ID`
+   - `DISCORD_CLIENT_SECRET`
+   - `NEXTAUTH_SECRET`
+   - `NEXTAUTH_URL` (Set this to your production URL, e.g., `https://hazebot.vercel.app`)
+5. Click **Deploy**.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vercel will now automatically build and update your live website every time you push new changes to GitHub!

@@ -1,66 +1,260 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import { useEffect } from 'react';
+import Link from 'next/link';
+import { signIn, useSession } from 'next-auth/react';
 
 export default function Home() {
+  const { data: session } = useSession();
+  useEffect(() => {
+    const handleScroll = () => {
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          (entry.target as HTMLElement).style.opacity = '1';
+          (entry.target as HTMLElement).style.transform = 'translateY(0)';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach((card, index) => {
+      (card as HTMLElement).style.opacity = '0';
+      (card as HTMLElement).style.transform = 'translateY(20px)';
+      (card as HTMLElement).style.transition = `all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) ${index * 0.1}s`;
+      observer.observe(card);
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <nav className="navbar">
+        <div className="nav-container">
+          <div className="logo">
+            <img src="/assets/logo.png" alt="HazeBot Logo" className="logo-img" />
+            <span className="logo-text">HazeBot</span>
+          </div>
+          <ul className="nav-links">
+            <li><Link href="#features">Features</Link></li>
+            <li><Link href="#commands">Commands</Link></li>
+            <li><Link href="#premium">Premium</Link></li>
+          </ul>
+          <div className="nav-cta">
+            {session ? (
+              <Link href="/dashboard" className="btn btn-primary">
+                Dashboard <i className="fa-solid fa-arrow-right"></i>
+              </Link>
+            ) : (
+              <button onClick={() => signIn('discord', { callbackUrl: '/dashboard' })} className="btn btn-primary">
+                Login with Discord <i className="fa-brands fa-discord"></i>
+              </button>
+            )}
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </nav>
+
+      <section className="hero" id="home">
+        <div className="hero-content">
+          <div className="hero-badge">
+            <span className="pulse"></span> V2.0 IS LIVE
+          </div>
+          <h1 className="hero-title">Elevate Your Community with <span className="highlight">HazeBot</span></h1>
+          <p className="hero-subtitle">The ultimate companion for moderation, automated alerts, and custom interactions. Build a professional, engaged, and thriving community.</p>
+          <div className="hero-buttons">
+            {session ? (
+              <Link href="/dashboard" className="btn btn-primary btn-large">Go to Dashboard</Link>
+            ) : (
+              <button onClick={() => signIn('discord', { callbackUrl: '/dashboard' })} className="btn btn-primary btn-large">Add to Discord</button>
+            )}
+            <Link href="#features" className="btn btn-secondary btn-large">Explore Features</Link>
+          </div>
+          
+          <div className="stats-container">
+            <div className="stat-item">
+              <h3>10k+</h3>
+              <p>Servers</p>
+            </div>
+            <div className="stat-item">
+              <h3>5M+</h3>
+              <p>Users</p>
+            </div>
+            <div className="stat-item">
+              <h3>99.9%</h3>
+              <p>Uptime</p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+        <div className="hero-image">
+          <div className="glass-card mockup-card">
+            <div className="mockup-header">
+              <div className="dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div className="mockup-title"># general-chat</div>
+            </div>
+            <div className="mockup-body">
+              <div className="chat-message">
+                <img src="/assets/logo.png" alt="Bot Avatar" className="chat-avatar" />
+                <div className="message-content">
+                  <span className="username">HazeBot <span className="bot-tag">APP</span></span>
+                  <span className="timestamp">Today at 4:20 PM</span>
+                  <div className="message-bubble">
+                    <strong>Alert:</strong> It's that time! The daily chill session has begun. Use <code>/join</code> to hop in voice! 🌿
+                  </div>
+                </div>
+              </div>
+              <div className="chat-message user-msg">
+                <div className="default-avatar"><i className="fa-solid fa-user"></i></div>
+                <div className="message-content">
+                  <span className="username">Streamer</span>
+                  <span className="timestamp">Today at 4:21 PM</span>
+                  <div className="message-bubble">
+                    /play lofi-beats
+                  </div>
+                </div>
+              </div>
+              <div className="chat-message">
+                <img src="/assets/logo.png" alt="Bot Avatar" className="chat-avatar" />
+                <div className="message-content">
+                  <span className="username">HazeBot <span className="bot-tag">APP</span></span>
+                  <span className="timestamp">Today at 4:21 PM</span>
+                  <div className="message-bubble success">
+                    🎵 Now playing: <strong>Chill Lofi Beats to Relax To</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="floating-icon icon-1"><i className="fa-solid fa-shield-halved"></i></div>
+          <div className="floating-icon icon-2"><i className="fa-solid fa-clock"></i></div>
+          <div className="floating-icon icon-3"><i className="fa-solid fa-music"></i></div>
+        </div>
+      </section>
+
+      <section className="features" id="features">
+        <div className="section-header">
+          <h2 className="section-title">Powerful Features</h2>
+          <p className="section-desc">Everything you need to manage your community, packed into one sleek interface.</p>
+        </div>
+        <div className="features-grid">
+          
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-shield-halved"></i></div>
+            <h3>Smart Moderation</h3>
+            <p>Automate your server's security with advanced filters, auto-kicks, and detailed mod logs.</p>
+          </div>
+          
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-stopwatch"></i></div>
+            <h3>Custom Timers</h3>
+            <p>Set up scheduled alerts, reminders, and thematic 420 events to keep your community engaged.</p>
+          </div>
+          
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-code"></i></div>
+            <h3>Custom Commands</h3>
+            <p>Create powerful, dynamic text commands and auto-responders unique to your server's culture.</p>
+          </div>
+          
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-ranking-star"></i></div>
+            <h3>Leveling System</h3>
+            <p>Reward active members with XP, custom rank cards, and automatic role assignments.</p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-music"></i></div>
+            <h3>High-Quality Audio</h3>
+            <p>Stream crystal clear music directly into your voice channels with full playback controls.</p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-chart-pie"></i></div>
+            <h3>Server Analytics</h3>
+            <p>Track your server's growth, message activity, and engagement with beautiful dashboards.</p>
+          </div>
+          
+        </div>
+      </section>
+
+      <section className="cta-section">
+        <div className="cta-box glass-card">
+          <h2>Ready to transform your server?</h2>
+          <p>Join thousands of other communities already using HazeBot to power up their engagement.</p>
+          {session ? (
+            <Link href="/dashboard" className="btn btn-primary btn-large mt-4">Go to Dashboard</Link>
+          ) : (
+            <button onClick={() => signIn('discord', { callbackUrl: '/dashboard' })} className="btn btn-primary btn-large mt-4">Invite HazeBot Now</button>
+          )}
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-col brand-col">
+            <div className="logo">
+              <img src="/assets/logo.png" alt="HazeBot Logo" className="logo-img" />
+              <span className="logo-text">HazeBot</span>
+            </div>
+            <p>The premium Discord companion built for modern communities.</p>
+            <div className="socials">
+              <a href="#"><i className="fa-brands fa-twitter"></i></a>
+              <a href="#"><i className="fa-brands fa-discord"></i></a>
+              <a href="#"><i className="fa-brands fa-github"></i></a>
+            </div>
+          </div>
+          <div className="footer-col">
+            <h4>Product</h4>
+            <ul>
+              <li><Link href="#">Features</Link></li>
+              <li><Link href="#">Commands</Link></li>
+              <li><Link href="#">Premium</Link></li>
+            </ul>
+          </div>
+          <div className="footer-col">
+            <h4>Resources</h4>
+            <ul>
+              <li><Link href="#">Documentation</Link></li>
+              <li><Link href="#">Support Server</Link></li>
+              <li><Link href="#">API</Link></li>
+            </ul>
+          </div>
+          <div className="footer-col">
+            <h4>Legal</h4>
+            <ul>
+              <li><Link href="#">Terms of Service</Link></li>
+              <li><Link href="#">Privacy Policy</Link></li>
+            </ul>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; 2026 HazeBot. All rights reserved.</p>
+        </div>
+      </footer>
+    </>
   );
 }
