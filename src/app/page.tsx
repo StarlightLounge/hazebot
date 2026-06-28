@@ -199,7 +199,6 @@ export default function Home() {
           </div>
           
         </div>
-        </div>
       </section>
 
       <section className="features" id="commands" style={{ background: 'var(--bg-secondary)', padding: '5rem 0' }}>
