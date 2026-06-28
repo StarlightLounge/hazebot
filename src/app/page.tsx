@@ -247,10 +247,10 @@ export default function Home() {
 
         <div style={{ textAlign: 'center', marginTop: '4rem' }}>
            <h3 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Upgrade to Premium for $4.99 / mo</h3>
-           <Link href="#" className="btn btn-primary btn-large" style={{ background: '#0070ba', color: 'white', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', boxShadow: '0 8px 24px rgba(0, 112, 186, 0.4)' }}>
-             <i className="fa-brands fa-paypal" style={{ fontSize: '1.25rem' }}></i> Subscribe with PayPal
+           <Link href="#" className="btn btn-primary btn-large" style={{ background: '#FF424D', color: 'white', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', boxShadow: '0 8px 24px rgba(255, 66, 77, 0.4)' }}>
+             <i className="fa-brands fa-patreon" style={{ fontSize: '1.25rem' }}></i> Support on Patreon
            </Link>
-           <p style={{ color: 'var(--text-muted)', marginTop: '1rem', fontSize: '0.9rem' }}>Secure checkout via PayPal.</p>
+           <p style={{ color: 'var(--text-muted)', marginTop: '1rem', fontSize: '0.9rem' }}>Unlock instant Discord rewards via Patreon.</p>
         </div>
       </section>
 
