@@ -98,6 +98,30 @@ export default function ServerSettings() {
     } catch (e) {
       console.error(e);
     }
+  const [brandingName, setBrandingName] = useState('');
+  const [brandingAvatar, setBrandingAvatar] = useState('');
+
+  const handleBrandingUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await fetch('/api/music', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          guildId: serverId, 
+          userId: session?.user?.id || session?.user?.email,
+          action: 'UPDATE_BRANDING', 
+          name: brandingName,
+          avatar_url: brandingAvatar
+        })
+      });
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (e) {
+      console.error(e);
+    }
+    setIsSaving(false);
   };
 
   const [musicState, setMusicState] = useState<any>(null);
@@ -163,7 +187,8 @@ export default function ServerSettings() {
              <button onClick={() => setActiveTab('moderation')} className={`btn ${activeTab === 'moderation' ? 'btn-primary' : 'btn-secondary'}`} style={{ width: '100%', justifyContent: 'flex-start', border: activeTab === 'moderation' ? '' : 'none' }}><i className="fa-solid fa-shield-halved"></i> Moderation</button>
              <button onClick={() => setActiveTab('timers')} className={`btn ${activeTab === 'timers' ? 'btn-primary' : 'btn-secondary'}`} style={{ width: '100%', justifyContent: 'flex-start', border: activeTab === 'timers' ? '' : 'none' }}><i className="fa-solid fa-stopwatch"></i> Timers</button>
              <button onClick={() => setActiveTab('commands')} className={`btn ${activeTab === 'commands' ? 'btn-primary' : 'btn-secondary'}`} style={{ width: '100%', justifyContent: 'flex-start', border: activeTab === 'commands' ? '' : 'none' }}><i className="fa-solid fa-code"></i> Commands</button>
-             <button onClick={() => setActiveTab('music')} className={`btn ${activeTab === 'music' ? 'btn-primary' : 'btn-secondary'}`} style={{ width: '100%', justifyContent: 'flex-start', border: activeTab === 'music' ? '' : 'none', marginTop: '1rem', background: activeTab === 'music' ? 'var(--accent-green)' : 'rgba(255,255,255,0.05)', color: activeTab === 'music' ? '#000' : 'white' }}><i className="fa-solid fa-music"></i> Web Player</button>
+             <button onClick={() => setActiveTab('branding')} className={`btn ${activeTab === 'branding' ? 'btn-primary' : 'btn-secondary'}`} style={{ width: '100%', justifyContent: 'flex-start', border: activeTab === 'branding' ? '' : 'none', marginTop: '1rem', background: activeTab === 'branding' ? 'var(--accent-green)' : 'rgba(255,255,255,0.05)', color: activeTab === 'branding' ? '#000' : 'white' }}><i className="fa-solid fa-robot"></i> Custom Bot</button>
+             <button onClick={() => setActiveTab('music')} className={`btn ${activeTab === 'music' ? 'btn-primary' : 'btn-secondary'}`} style={{ width: '100%', justifyContent: 'flex-start', border: activeTab === 'music' ? '' : 'none', background: activeTab === 'music' ? 'var(--accent-green)' : 'rgba(255,255,255,0.05)', color: activeTab === 'music' ? '#000' : 'white' }}><i className="fa-solid fa-music"></i> Web Player</button>
           </div>
           
           {/* Content Area */}
@@ -229,6 +254,24 @@ export default function ServerSettings() {
                   <input type="text" placeholder="Bot response" style={{ flex: 2, padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
                   <button onClick={handleSave} className="btn btn-primary">Add</button>
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'branding' && (
+              <div>
+                <h2 style={{ marginBottom: '1.5rem' }}>Custom Bot Branding</h2>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Change the bot's identity completely for this server. (Requires Premium)</p>
+                <form onSubmit={handleBrandingUpdate}>
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Bot Nickname</label>
+                    <input type="text" value={brandingName} onChange={(e) => setBrandingName(e.target.value)} placeholder="Enter a custom name..." style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
+                  </div>
+                  <div style={{ marginBottom: '2rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Avatar Image URL</label>
+                    <input type="text" value={brandingAvatar} onChange={(e) => setBrandingAvatar(e.target.value)} placeholder="https://example.com/image.png" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
+                  </div>
+                  <button type="submit" disabled={isSaving} className="btn btn-primary" style={{ background: 'var(--accent-green)', color: '#000' }}>{isSaving ? 'Updating...' : 'Update Branding'}</button>
+                </form>
               </div>
             )}
 
