@@ -247,7 +247,7 @@ export default function Home() {
 
         <div style={{ textAlign: 'center', marginTop: '4rem' }}>
            <h3 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Upgrade to Premium for $4.99 / mo</h3>
-           <Link href="#" className="btn btn-primary btn-large" style={{ background: '#FF424D', color: 'white', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', boxShadow: '0 8px 24px rgba(255, 66, 77, 0.4)' }}>
+           <Link href="https://www.patreon.com/16139852/join" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-large" style={{ background: '#FF424D', color: 'white', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', boxShadow: '0 8px 24px rgba(255, 66, 77, 0.4)' }}>
              <i className="fa-brands fa-patreon" style={{ fontSize: '1.25rem' }}></i> Support on Patreon
            </Link>
            <p style={{ color: 'var(--text-muted)', marginTop: '1rem', fontSize: '0.9rem' }}>Unlock instant Discord rewards via Patreon.</p>
