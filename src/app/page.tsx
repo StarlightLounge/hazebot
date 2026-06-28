@@ -199,6 +199,51 @@ export default function Home() {
           </div>
           
         </div>
+        </div>
+      </section>
+
+      <section className="features" id="commands" style={{ background: 'var(--bg-secondary)', padding: '5rem 0' }}>
+        <div className="section-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 className="section-title">Essential Commands</h2>
+          <p className="section-desc">Just a taste of what HazeBot can do out of the box.</p>
+        </div>
+        <div className="features-grid" style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', padding: '0 2rem' }}>
+           <div className="glass-card" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-green)' }}>
+              <h3 style={{ marginBottom: '0.5rem' }}><code>/setup</code></h3>
+              <p style={{ color: 'var(--text-muted)' }}>Initializes HazeBot and creates essential roles and channels.</p>
+           </div>
+           <div className="glass-card" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-purple)' }}>
+              <h3 style={{ marginBottom: '0.5rem' }}><code>/ban @user [reason]</code></h3>
+              <p style={{ color: 'var(--text-muted)' }}>Ban a user securely and log the action in the mod-logs channel.</p>
+           </div>
+           <div className="glass-card" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-green)' }}>
+              <h3 style={{ marginBottom: '0.5rem' }}><code>/play [song name]</code></h3>
+              <p style={{ color: 'var(--text-muted)' }}>Searches and plays high-quality audio directly in your voice channel.</p>
+           </div>
+           <div className="glass-card" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-purple)' }}>
+              <h3 style={{ marginBottom: '0.5rem' }}><code>/timer create [duration]</code></h3>
+              <p style={{ color: 'var(--text-muted)' }}>Start a custom countdown timer with an automated ping upon completion.</p>
+           </div>
+        </div>
+      </section>
+
+      <section className="features" id="premium" style={{ padding: '5rem 0' }}>
+        <div className="section-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 className="section-title">HazeBot Premium</h2>
+          <p className="section-desc">Take your server to the next level with exclusive perks.</p>
+        </div>
+        <div className="features-grid" style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', padding: '0 2rem' }}>
+          <div className="feature-card" style={{ textAlign: 'center', padding: '3rem 2rem', background: 'linear-gradient(135deg, rgba(20,18,28,0.8) 0%, rgba(30,26,45,0.8) 100%)' }}>
+            <div className="feature-icon" style={{ margin: '0 auto 1.5rem' }}><i className="fa-solid fa-palette"></i></div>
+            <h3>Custom Branding</h3>
+            <p>Change the bot's avatar and name in your server for a fully white-labeled experience.</p>
+          </div>
+          <div className="feature-card" style={{ textAlign: 'center', padding: '3rem 2rem', background: 'linear-gradient(135deg, rgba(20,18,28,0.8) 0%, rgba(30,26,45,0.8) 100%)' }}>
+            <div className="feature-icon" style={{ margin: '0 auto 1.5rem' }}><i className="fa-solid fa-bolt"></i></div>
+            <h3>Priority Audio Queue</h3>
+            <p>Skip the public bot congestion. Premium servers get dedicated high-priority audio nodes.</p>
+          </div>
+        </div>
       </section>
 
       <section className="cta-section">
@@ -222,23 +267,23 @@ export default function Home() {
             </div>
             <p>The premium Discord companion built for modern communities.</p>
             <div className="socials">
-              <a href="#"><i className="fa-brands fa-twitter"></i></a>
-              <a href="#"><i className="fa-brands fa-discord"></i></a>
-              <a href="#"><i className="fa-brands fa-github"></i></a>
+              <Link href="#"><i className="fa-brands fa-twitter"></i></Link>
+              <Link href="#"><i className="fa-brands fa-discord"></i></Link>
+              <Link href="#"><i className="fa-brands fa-github"></i></Link>
             </div>
           </div>
           <div className="footer-col">
             <h4>Product</h4>
             <ul>
-              <li><Link href="#">Features</Link></li>
-              <li><Link href="#">Commands</Link></li>
-              <li><Link href="#">Premium</Link></li>
+              <li><Link href="#features">Features</Link></li>
+              <li><Link href="#commands">Commands</Link></li>
+              <li><Link href="#premium">Premium</Link></li>
             </ul>
           </div>
           <div className="footer-col">
             <h4>Resources</h4>
             <ul>
-              <li><Link href="#">Documentation</Link></li>
+              <li><Link href="#home">Dashboard</Link></li>
               <li><Link href="#">Support Server</Link></li>
               <li><Link href="#">API</Link></li>
             </ul>
