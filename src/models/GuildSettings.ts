@@ -8,4 +8,4 @@ const GuildSettingsSchema = new mongoose.Schema({
   logDeletedMessages: { type: Boolean, default: true },
 });
 
-export default mongoose.models.GuildSettings || mongoose.model('GuildSettings', GuildSettingsSchema);
+export default mongoose.models.GuildSettings || mongoose.model('GuildSettings', GuildSettingsSchema, 'guilds');
