@@ -9,12 +9,24 @@ export default function ServerSettings() {
   const { data: session, status } = useSession();
   const params = useParams();
   const serverId = params.id as string;
+  
   const [serverName, setServerName] = useState<string>("Loading...");
   const [activeTab, setActiveTab] = useState('general');
   const [showToast, setShowToast] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
+  // Settings State
+  const [settings, setSettings] = useState({
+    prefix: '!',
+    welcomeChannel: 'general-chat',
+    autoMod: 'Relaxed (Block severe words)',
+    logDeletedMessages: true
+  });
+
+  // Fetch Server Details and Settings
   useEffect(() => {
     if (status === "authenticated") {
+      // Fetch Guild Name
       fetch('/api/guilds')
         .then(res => res.json())
         .then(data => {
@@ -25,12 +37,46 @@ export default function ServerSettings() {
           }
         })
         .catch(() => setServerName("Error loading server"));
+
+      // Fetch Guild Settings from DB
+      fetch(`/api/settings?guildId=${serverId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && !data.error) {
+            setSettings({
+              prefix: data.prefix || '!',
+              welcomeChannel: data.welcomeChannel || 'general-chat',
+              autoMod: data.autoMod || 'Relaxed (Block severe words)',
+              logDeletedMessages: data.logDeletedMessages ?? true
+            });
+          }
+        })
+        .catch(console.error);
     }
   }, [status, serverId]);
 
-  const handleSave = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guildId: serverId, ...settings })
+      });
+      if (res.ok) {
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      }
+    } catch (error) {
+      console.error("Failed to save settings", error);
+    }
+    setIsSaving(false);
+  };
+
+  const handleSettingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const target = e.target as HTMLInputElement;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    setSettings(prev => ({ ...prev, [target.name]: value }));
   };
 
   if (status === "loading") return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
@@ -89,16 +135,16 @@ export default function ServerSettings() {
                 <h2 style={{ marginBottom: '1.5rem' }}>General Settings</h2>
                 <div style={{ marginBottom: '2rem' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Bot Prefix</label>
-                  <input type="text" defaultValue="!" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
+                  <input type="text" name="prefix" value={settings.prefix} onChange={handleSettingChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: '2rem' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Welcome Channel</label>
-                  <select style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }}>
-                    <option style={{ color: 'black' }}># general-chat</option>
-                    <option style={{ color: 'black' }}># welcome</option>
+                  <select name="welcomeChannel" value={settings.welcomeChannel} onChange={handleSettingChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }}>
+                    <option value="general-chat" style={{ color: 'black' }}># general-chat</option>
+                    <option value="welcome" style={{ color: 'black' }}># welcome</option>
                   </select>
                 </div>
-                <button onClick={handleSave} className="btn btn-primary mt-4">Save Changes</button>
+                <button onClick={handleSave} disabled={isSaving} className="btn btn-primary mt-4">{isSaving ? 'Saving...' : 'Save Changes'}</button>
               </div>
             )}
 
@@ -107,17 +153,17 @@ export default function ServerSettings() {
                 <h2 style={{ marginBottom: '1.5rem' }}>Moderation Settings</h2>
                 <div style={{ marginBottom: '2rem' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Auto-Mod Filter</label>
-                  <select style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }}>
-                    <option style={{ color: 'black' }}>Strict (Block all profanity)</option>
-                    <option style={{ color: 'black' }}>Relaxed (Block severe words)</option>
-                    <option style={{ color: 'black' }}>Off</option>
+                  <select name="autoMod" value={settings.autoMod} onChange={handleSettingChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }}>
+                    <option value="Strict (Block all profanity)" style={{ color: 'black' }}>Strict (Block all profanity)</option>
+                    <option value="Relaxed (Block severe words)" style={{ color: 'black' }}>Relaxed (Block severe words)</option>
+                    <option value="Off" style={{ color: 'black' }}>Off</option>
                   </select>
                 </div>
                 <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                   <input type="checkbox" defaultChecked style={{ width: '20px', height: '20px' }} />
+                   <input type="checkbox" name="logDeletedMessages" checked={settings.logDeletedMessages} onChange={handleSettingChange} style={{ width: '20px', height: '20px' }} />
                    <label style={{ fontWeight: 'bold' }}>Log deleted messages</label>
                 </div>
-                <button onClick={handleSave} className="btn btn-primary mt-4">Save Changes</button>
+                <button onClick={handleSave} disabled={isSaving} className="btn btn-primary mt-4">{isSaving ? 'Saving...' : 'Save Changes'}</button>
               </div>
             )}
 
