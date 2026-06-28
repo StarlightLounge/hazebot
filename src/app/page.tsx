@@ -244,6 +244,14 @@ export default function Home() {
             <p>Skip the public bot congestion. Premium servers get dedicated high-priority audio nodes.</p>
           </div>
         </div>
+
+        <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+           <h3 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Upgrade to Premium for $4.99 / mo</h3>
+           <Link href="#" className="btn btn-primary btn-large" style={{ background: '#0070ba', color: 'white', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.75rem', boxShadow: '0 8px 24px rgba(0, 112, 186, 0.4)' }}>
+             <i className="fa-brands fa-paypal" style={{ fontSize: '1.25rem' }}></i> Subscribe with PayPal
+           </Link>
+           <p style={{ color: 'var(--text-muted)', marginTop: '1rem', fontSize: '0.9rem' }}>Secure checkout via PayPal.</p>
+        </div>
       </section>
 
       <section className="cta-section">
