@@ -79,6 +79,26 @@ export default function ServerSettings() {
     setSettings(prev => ({ ...prev, [target.name]: value }));
   };
 
+  const handleMusicAction = async (action: string, url?: string) => {
+    try {
+      await fetch('/api/music', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          guildId: serverId, 
+          action, 
+          url 
+        })
+      });
+      if (action === 'PLAY') {
+         setShowToast(true);
+         setTimeout(() => setShowToast(false), 3000);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   if (status === "loading") return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
   if (status === "unauthenticated") redirect('/');
 
@@ -216,29 +236,32 @@ export default function ServerSettings() {
                    </div>
                 </div>
 
-                {/* Controls */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', padding: '0 1rem' }}>
-                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                      <button className="btn btn-secondary" style={{ width: '45px', height: '45px', borderRadius: '50%', padding: 0 }}><i className="fa-solid fa-backward-step"></i></button>
-                      <button className="btn btn-primary" style={{ width: '55px', height: '55px', borderRadius: '50%', padding: 0, fontSize: '1.25rem', background: 'var(--accent-green)', color: '#000' }}><i className="fa-solid fa-pause"></i></button>
-                      <button className="btn btn-secondary" style={{ width: '45px', height: '45px', borderRadius: '50%', padding: 0 }}><i className="fa-solid fa-forward-step"></i></button>
-                   </div>
-                   <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                      <button className="btn btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0, color: 'var(--accent-green)' }}><i className="fa-solid fa-repeat"></i></button>
-                      <button className="btn btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0 }}><i className="fa-solid fa-shuffle"></i></button>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '20px' }}>
-                        <i className="fa-solid fa-volume-high" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}></i>
-                        <input type="range" defaultValue="75" style={{ width: '80px', accentColor: 'var(--accent-green)', cursor: 'pointer' }} />
-                      </div>
-                   </div>
+                {/* Player Controls */}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2rem', marginTop: '2rem' }}>
+                  <button onClick={() => handleMusicAction('SKIP')} className="btn btn-secondary" style={{ width: '50px', height: '50px', borderRadius: '50%', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fa-solid fa-backward-step"></i></button>
+                  <button onClick={() => handleMusicAction('PAUSE')} className="btn btn-primary" style={{ width: '65px', height: '65px', borderRadius: '50%', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', background: 'var(--accent-green)', color: 'black' }}><i className="fa-solid fa-play"></i></button>
+                  <button onClick={() => handleMusicAction('SKIP')} className="btn btn-secondary" style={{ width: '50px', height: '50px', borderRadius: '50%', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fa-solid fa-forward-step"></i></button>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', justifyContent: 'center', marginTop: '2rem' }}>
+                    <button className="btn btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0, color: 'var(--accent-green)' }}><i className="fa-solid fa-repeat"></i></button>
+                    <button className="btn btn-secondary" style={{ background: 'transparent', border: 'none', padding: 0 }}><i className="fa-solid fa-shuffle"></i></button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '20px' }}>
+                    <i className="fa-solid fa-volume-high" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}></i>
+                    <input type="range" defaultValue="75" style={{ width: '80px', accentColor: 'var(--accent-green)', cursor: 'pointer' }} />
+                    </div>
                 </div>
 
-                {/* Queue */}
-                <h3 style={{ marginBottom: '1rem' }}>Up Next in Queue</h3>
-                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                   <input type="text" placeholder="Paste YouTube/Spotify link or search..." style={{ flex: 1, padding: '0.85rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
-                   <button onClick={handleSave} className="btn btn-primary" style={{ padding: '0 1.5rem' }}><i className="fa-solid fa-plus"></i> Add</button>
-                </div>
+                {/* Queue UI */}
+                <div style={{ marginTop: '3rem' }}>
+                  <h3 style={{ marginBottom: '1rem' }}>Queue</h3>
+                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <input type="text" id="musicUrl" placeholder="Paste YouTube or Spotify link..." style={{ flex: '1', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
+                    <button onClick={() => {
+                        const el = document.getElementById('musicUrl') as HTMLInputElement;
+                        if(el && el.value) { handleMusicAction('PLAY', el.value); el.value = ''; }
+                    }} className="btn btn-secondary"><i className="fa-solid fa-plus"></i> Add</button>
+                  </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', borderLeft: '3px solid transparent', transition: '0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'} onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
