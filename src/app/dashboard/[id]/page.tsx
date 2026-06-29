@@ -100,8 +100,7 @@ export default function ServerSettings() {
     }
   };
 
-  const [brandingName, setBrandingName] = useState('');
-  const [brandingAvatar, setBrandingAvatar] = useState('');
+  const [botToken, setBotToken] = useState('');
 
   const handleBrandingUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,9 +112,8 @@ export default function ServerSettings() {
         body: JSON.stringify({ 
           guildId: serverId, 
           userId: (session?.user as any)?.id || session?.user?.email,
-          action: 'UPDATE_BRANDING', 
-          name: brandingName,
-          avatar_url: brandingAvatar
+          action: 'REGISTER_CUSTOM_BOT', 
+          token: botToken
         })
       });
       setShowToast(true);
@@ -261,18 +259,24 @@ export default function ServerSettings() {
 
             {activeTab === 'branding' && (
               <div>
-                <h2 style={{ marginBottom: '1.5rem' }}>Custom Bot Branding</h2>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Change the bot's identity completely for this server. (Requires Premium)</p>
+                <h2 style={{ marginBottom: '1.5rem' }}>True Custom Bot</h2>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Host your own dedicated instance of HazeBot using your own Discord Token! (Premium Feature)</p>
+                
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem' }}>
+                    <h3 style={{ marginBottom: '1rem', color: 'var(--accent-green)' }}><i className="fa-solid fa-book"></i> Setup Guide</h3>
+                    <ol style={{ paddingLeft: '1.5rem', color: 'var(--text-muted)', lineHeight: '1.8' }}>
+                        <li>Go to the <a href="https://discord.com/developers/applications" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-green)' }}>Discord Developer Portal</a> and create a <strong>New Application</strong>.</li>
+                        <li>Click the <strong>Bot</strong> tab on the left, then click <strong>Add Bot</strong>.</li>
+                        <li>Click <strong>Reset Token</strong>, copy the super secret token string, and paste it below!</li>
+                    </ol>
+                </div>
+
                 <form onSubmit={handleBrandingUpdate}>
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Bot Nickname</label>
-                    <input type="text" value={brandingName} onChange={(e) => setBrandingName(e.target.value)} placeholder="Enter a custom name..." style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
-                  </div>
                   <div style={{ marginBottom: '2rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Avatar Image URL</label>
-                    <input type="text" value={brandingAvatar} onChange={(e) => setBrandingAvatar(e.target.value)} placeholder="https://example.com/image.png" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Discord Bot Token <span style={{ color: '#ff6b6b' }}>*</span></label>
+                    <input type="password" required value={botToken} onChange={(e) => setBotToken(e.target.value)} placeholder="MTE1..." style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
                   </div>
-                  <button type="submit" disabled={isSaving} className="btn btn-primary" style={{ background: 'var(--accent-green)', color: '#000' }}>{isSaving ? 'Updating...' : 'Update Branding'}</button>
+                  <button type="submit" disabled={isSaving || !botToken} className="btn btn-primary" style={{ background: 'var(--accent-green)', color: '#000' }}>{isSaving ? 'Launching Bot...' : 'Deploy Custom Bot'}</button>
                 </form>
               </div>
             )}

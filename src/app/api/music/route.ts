@@ -9,6 +9,7 @@ const WebCommandSchema = new mongoose.Schema({
   url: String,
   name: String,
   avatar_url: String,
+  token: String,
   timestamp: { type: Date, default: Date.now }
 });
 
@@ -16,11 +17,11 @@ const WebCommand = mongoose.models.WebCommand || mongoose.model('WebCommand', We
 
 export async function POST(request: Request) {
   try {
-    const { guildId, action, url, userId, name, avatar_url } = await request.json();
+    const { guildId, action, url, userId, name, avatar_url, token } = await request.json();
     if (!guildId || !action) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
 
     await connectToDatabase();
-    await WebCommand.create({ guildId, action, url, userId, name, avatar_url });
+    await WebCommand.create({ guildId, action, url, userId, name, avatar_url, token });
     
     return NextResponse.json({ success: true });
   } catch (error) {
